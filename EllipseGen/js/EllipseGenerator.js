@@ -18,13 +18,16 @@ function tableCreate(rows, columns) {
     const tbl = document.createElement('table');
     const squares = [];
 
+    tbl.id = 'ellipseTable';
+
     for (let i = 0; i < rows; i++) {
         const tr = tbl.insertRow();
+        tr.classList.add(`row-${i}`);
         for (let j = 0; j < columns; j++) {
             const td = tr.insertCell();
             const div = document.createElement('div');
             div.classList.add('square');
-            div.id = `${i}-${j}`;
+            td.classList.add(`col-${j}`);
             squares.push(div);
             td.appendChild(div);
         }
@@ -32,18 +35,6 @@ function tableCreate(rows, columns) {
 
     fragment.appendChild(tbl);
     ellipseGrid.appendChild(fragment);
-
-    // Apply styles in bulk
-    let styleTable = document.getElementById("styleTable");
-    if (styleTable) {
-        styleTable.innerHTML = "";
-    } else {
-        styleTable = document.createElement('style');
-    }
-    styleTable.setAttribute('type', 'text/css');
-    styleTable.setAttribute('id', 'styleTable');
-    styleTable.appendChild(document.createTextNode('.square{background-color: lightgray;}'));
-    document.head.appendChild(styleTable);
 }
 
 /**
@@ -131,11 +122,9 @@ function insertParam(key, doReturn=false) {
  * Generates an ellipse pattern within a grid of squares.
  */
 function genEllipse() {
+    const ellipseTable = document.getElementById("ellipseTable");
     const rows = parseInt(document.getElementById("rowsInput").value);
     const columns = parseInt(document.getElementById("columnsInput").value);
-
-    const center = [columns/2, rows/2];
-    console.log(center);
 
     let styleSquares = document.getElementById("styleSquares");
     if (styleSquares) {
@@ -145,19 +134,26 @@ function genEllipse() {
     }
     styleSquares.setAttribute('type', 'text/css');
     styleSquares.setAttribute('id', 'styleSquares');
-    // style.appendChild(document.createTextNode('.square{background-color: lightgray;}'));
-    document.head.appendChild(styleSquares);
 
-    const ellipseFunction = calculateEllipseY(rows, columns);
-
-    console.log(ellipseFunction)
-    console.log(ellipseFunction(1))
-
-    for (let i = 0; i <= columns[0]; i++) {
-        let topLeftY = ellipseFunction(i);
-        console.log(topLeftY)
-        styleSquares.appendChild(document.createTextNode(`#${topLeftY}-${i}{background-color: red;}`));
+    if (rows >= columns) {
+        const ellipseFunction = calculateEllipseFunction(rows, columns);
+        for (let i = 0; i <= columns; i++) {
+            let topLeftY = ellipseFunction(i);
+            console.log(i, topLeftY)
+            styleSquares.appendChild(document.createTextNode(`.row-${topLeftY} .col-${i} {background-color: red;}`));
+            styleSquares.appendChild(document.createTextNode(`.row-${Math.round(rows-topLeftY)} .col-${i} {background-color: red;}`));
+        }
+    } else {
+        const ellipseFunction = calculateEllipseFunction(columns, rows);
+        for (let j = 0; j <= columns; j++) {
+            let topLeftY = ellipseFunction(j);
+            console.log(j, topLeftY)
+            styleSquares.appendChild(document.createTextNode(`.row-${topLeftY} .col-${j} {background-color: red;}`));
+            styleSquares.appendChild(document.createTextNode(`.row-${Math.round(rows-topLeftY)} .col-${j} {background-color: red;}`));
+        }
     }
+
+    ellipseTable.appendChild(styleSquares);
 }
 
 
@@ -165,19 +161,23 @@ function genEllipse() {
  * Generates a function to calculate the y-coordinate of an ellipse given the x-coordinate.
  * The function uses pre-calculated terms for efficiency.
  *
- * @param {number} a - The major axis length of the ellipse.
- * @param {number} b - The minor axis length of the ellipse.
+ * @param {number} majorAx - The major axis length of the ellipse.
+ * @param {number} minorAx - The minor axis length of the ellipse.
  * @returns {function} A function that takes an x-coordinate and returns the corresponding y-coordinate on the ellipse.
  * Calculates the y-coordinate of an ellipse at a given x-coordinate using pre-calculated terms.
  *
  * @param {number} x - The x-coordinate for which to calculate the y-coordinate on the ellipse.
  * @returns {number} The y-coordinate on the ellipse corresponding to the given x-coordinate.
  */
-function calculateEllipseY(a, b) {
-    const calcA = a / 2;
-    const term1 = Math.pow(calcA, 2);
-    const term2 = (b / (2 * a)) 
-    const term3 = b / 4;
+function calculateEllipseFunction(majorAx, minorAx) {
+    // a/2
+    const calcWidth = majorAx / 2;
+    // (a^2)/4
+    const term1 = Math.pow(majorAx, 2) / 4;
+    // b/a
+    const term2 = minorAx / majorAx
+    // b/2
+    const term3 = minorAx / 2;
     
     /**
      * Calculates the y-coordinate of an ellipse at a given x-coordinate using pre-calculated terms.
@@ -186,8 +186,13 @@ function calculateEllipseY(a, b) {
      * @returns {number} The y-coordinate on the ellipse corresponding to the given x-coordinate.
      */
     function preCalculatedEllipseFunction(x){
-        const sqrtValue = term1 - Math.pow((x - calcA), 2);
-        return term2 * (sqrtValue >= 0 ? Math.sqrt(sqrtValue) : 0) + term3;
+        // sqrt((a^2)/4 - (x-a/2)^2)
+        const sqrtValue = term1 - Math.pow((x - calcWidth), 2);
+        console.log(`root`, sqrtValue)
+        // (b/a) * sqrt((a^2)/4 - (x-a/2)^2) + b/2
+        let term4 = term2 * (sqrtValue >= 0 ? Math.sqrt(sqrtValue) : 0);
+        let result = Math.round(term4 + term3);
+        return result;
     }
 
     return preCalculatedEllipseFunction;
