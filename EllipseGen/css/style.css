@@ -21,7 +21,7 @@ body {
     
 }
 
-.circle {
+.ellipse {
     margin-left: 15%;
     height: auto;
 }
@@ -30,7 +30,7 @@ body {
     text-align: center;
 }
 
-#circleGrid {
+#ellipseGrid {
     margin-left: auto;
     margin-right: auto;
 
@@ -39,18 +39,18 @@ body {
     height: 20px;
 }
 
-#circleGrid table {
+#ellipseGrid table {
     background-color: lightgray;
     width: 84%;
     height: auto;
     border: 1px solid black;
 }
 
-#circleGrid td {
+#ellipseGrid td {
     border: 1px solid black;
 }
 
-#circleGrid td .square {
+#ellipseGrid td .square {
     aspect-ratio: 1/1;
 }
 
@@ -68,7 +68,7 @@ body {
     margin-right: 5%;
 }
 
-#generateTable {
+.setTableSize .button {
     width: 100%;
     height: auto;
     margin-left: auto;

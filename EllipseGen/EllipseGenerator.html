@@ -3,17 +3,16 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Circle Generator</title>
-    <meta name="description" content="Cricle Generator">
+    <title>Ellipse Generator</title>
+    <meta name="description" content="Ellipse Generator">
     <link rel="icon" href="img/icon.png">
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
-    <!-- <script type="text/javascript" src="/eel.js"></script> -->
-    <script type="text/javascript" src="./js/main.js"></script>
+    <link rel="stylesheet" type="text/css" href="./css/style.css" />
+    <script type="text/javascript" src="./js/EllipseGenerator.js"></script>
 </head>
 
 <body onload="initTableCreate(5,5)">
     <div>
-        <h1 id="title">Circle generator!</h1>
+        <h1 id="title">Ellipse generator!</h1>
     </div>
     <section class="seperator">
         <div class="setTableSize">
@@ -24,10 +23,11 @@
                 <input type="number" id="rowsInput" min="1" value="5">
                 <label for="columnsInput">Columns:</label>
                 <input type="number" id="columnsInput" min="1" value="5">
-                <button onclick="updateTable()" id="generateTable">Generate Table</button>
+                <button onclick="updateTable()" class="button" id="generateTable">Generate Table</button>
+                <button onclick="genEllipse()" class="button" id="generateEllipse">Generate Ellipse</button>
             </div>
         </div>
-        <div class="circle" id="circleGrid"></div>
+        <div class="ellipse" id="ellipseGrid"></div>
     </section>
 </body>
 

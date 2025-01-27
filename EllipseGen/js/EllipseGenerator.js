@@ -6,12 +6,12 @@
  */
 function tableCreate(rows, columns) {
     // Clear the existing table if any
-    const circleGrid = document.getElementById("circleGrid");
-    if (!circleGrid) {
-        console.error('Element with id "circleGrid" not found.');
+    const ellipseGrid = document.getElementById("ellipseGrid");
+    if (!ellipseGrid) {
+        console.error('Element with id "ellipseGrid" not found.');
         return;
     }
-    circleGrid.innerHTML = "";
+    ellipseGrid.innerHTML = "";
 
     // Create a new table
     const fragment = document.createDocumentFragment();
@@ -31,13 +31,19 @@ function tableCreate(rows, columns) {
     }
 
     fragment.appendChild(tbl);
-    circleGrid.appendChild(fragment);
+    ellipseGrid.appendChild(fragment);
 
     // Apply styles in bulk
-    const style = document.createElement('style');
-    style.setAttribute('type', 'text/css');
-    style.appendChild(document.createTextNode('.square{background-color: lightgray;}'));
-    document.head.appendChild(style);
+    let styleTable = document.getElementById("styleTable");
+    if (styleTable) {
+        styleTable.innerHTML = "";
+    } else {
+        styleTable = document.createElement('style');
+    }
+    styleTable.setAttribute('type', 'text/css');
+    styleTable.setAttribute('id', 'styleTable');
+    styleTable.appendChild(document.createTextNode('.square{background-color: lightgray;}'));
+    document.head.appendChild(styleTable);
 }
 
 /**
@@ -118,4 +124,71 @@ function insertParam(key, doReturn=false) {
     if (doReturn){
         return params;
     }
+}
+
+
+/**
+ * Generates an ellipse pattern within a grid of squares.
+ */
+function genEllipse() {
+    const rows = parseInt(document.getElementById("rowsInput").value);
+    const columns = parseInt(document.getElementById("columnsInput").value);
+
+    const center = [columns/2, rows/2];
+    console.log(center);
+
+    let styleSquares = document.getElementById("styleSquares");
+    if (styleSquares) {
+        styleSquares.innerHTML = "";
+    } else {
+        styleSquares = document.createElement('style');
+    }
+    styleSquares.setAttribute('type', 'text/css');
+    styleSquares.setAttribute('id', 'styleSquares');
+    // style.appendChild(document.createTextNode('.square{background-color: lightgray;}'));
+    document.head.appendChild(styleSquares);
+
+    const ellipseFunction = calculateEllipseY(rows, columns);
+
+    console.log(ellipseFunction)
+    console.log(ellipseFunction(1))
+
+    for (let i = 0; i <= columns[0]; i++) {
+        let topLeftY = ellipseFunction(i);
+        console.log(topLeftY)
+        styleSquares.appendChild(document.createTextNode(`#${topLeftY}-${i}{background-color: red;}`));
+    }
+}
+
+
+/**
+ * Generates a function to calculate the y-coordinate of an ellipse given the x-coordinate.
+ * The function uses pre-calculated terms for efficiency.
+ *
+ * @param {number} a - The major axis length of the ellipse.
+ * @param {number} b - The minor axis length of the ellipse.
+ * @returns {function} A function that takes an x-coordinate and returns the corresponding y-coordinate on the ellipse.
+ * Calculates the y-coordinate of an ellipse at a given x-coordinate using pre-calculated terms.
+ *
+ * @param {number} x - The x-coordinate for which to calculate the y-coordinate on the ellipse.
+ * @returns {number} The y-coordinate on the ellipse corresponding to the given x-coordinate.
+ */
+function calculateEllipseY(a, b) {
+    const calcA = a / 2;
+    const term1 = Math.pow(calcA, 2);
+    const term2 = (b / (2 * a)) 
+    const term3 = b / 4;
+    
+    /**
+     * Calculates the y-coordinate of an ellipse at a given x-coordinate using pre-calculated terms.
+     *
+     * @param {number} x - The x-coordinate for which to calculate the y-coordinate on the ellipse.
+     * @returns {number} The y-coordinate on the ellipse corresponding to the given x-coordinate.
+     */
+    function preCalculatedEllipseFunction(x){
+        const sqrtValue = term1 - Math.pow((x - calcA), 2);
+        return term2 * (sqrtValue >= 0 ? Math.sqrt(sqrtValue) : 0) + term3;
+    }
+
+    return preCalculatedEllipseFunction;
 }
