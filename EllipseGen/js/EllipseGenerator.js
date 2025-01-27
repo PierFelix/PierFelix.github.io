@@ -49,7 +49,7 @@ function initTableCreate(defaultRows, defaultColumns) {
     const columns = parseInt(urlParams.get('columns')) || defaultColumns;
 
     insertParam([`rows=${rows}`, `columns=${columns}`]);
-    
+
     document.getElementById("rowsInput").value = rows;
     document.getElementById("columnsInput").value = columns;
 
@@ -77,21 +77,21 @@ function updateTable() {
  * @param {boolean} doReturn - If the params should be returned.
  * @returns {void}
  */
-function insertParam(key, doReturn=false) {
+function insertParam(key, doReturn = false) {
     // kvp looks like ['key1=value1', 'key2=value2', ...]
     var kvp = document.location.search.substring(1).split('&');
-    
-    let i=0;
-    let j=0;
+
+    let i = 0;
+    let j = 0;
 
     let encKey = '';
     let encValue = '';
 
-    for(; i<key.length; i++){
+    for (; i < key.length; i++) {
         [encKey, encValue] = key[i].split('=');
         encKey = encodeURIComponent(encKey);
         encValue = encodeURIComponent(encValue);
-        for(; j<kvp.length; j++){
+        for (; j < kvp.length; j++) {
             if (kvp[j].startsWith(encKey + '=')) {
                 let pair = kvp[j].split('=');
                 pair[1] = encValue;
@@ -100,8 +100,8 @@ function insertParam(key, doReturn=false) {
             }
         }
 
-        if(j >= kvp.length){
-            kvp[kvp.length] = [encKey,encValue].join('=');
+        if (j >= kvp.length) {
+            kvp[kvp.length] = [encKey, encValue].join('=');
         }
     }
 
@@ -112,7 +112,7 @@ function insertParam(key, doReturn=false) {
     const newUrl = `${window.location.pathname}?${params}`;
     window.history.pushState({ path: newUrl }, '', newUrl);
 
-    if (doReturn){
+    if (doReturn) {
         return params;
     }
 }
@@ -125,6 +125,7 @@ function genEllipse() {
     const ellipseTable = document.getElementById("ellipseTable");
     const rows = parseInt(document.getElementById("rowsInput").value);
     const columns = parseInt(document.getElementById("columnsInput").value);
+    // const fill = document.getElementById("fillCheckbox").checked || false;
 
     let styleSquares = document.getElementById("styleSquares");
     if (styleSquares) {
@@ -135,13 +136,23 @@ function genEllipse() {
     styleSquares.setAttribute('type', 'text/css');
     styleSquares.setAttribute('id', 'styleSquares');
 
+    let cords = [];
+
     if (rows >= columns) {
         const ellipseFunction = calculateEllipseFunction(rows, columns);
         for (let i = 0; i <= columns; i++) {
             let topLeftY = ellipseFunction(i);
-            console.log(i, topLeftY)
+
+            if (true) { // fill
+                for (let j = topLeftY; j < rows-topLeftY; j--) {
+                    cords.push([j, i]);
+                };
+            };
+            console.log(cords);
+        
+            // console.log(i, topLeftY)
             styleSquares.appendChild(document.createTextNode(`.row-${topLeftY} .col-${i} {background-color: red;}`));
-            styleSquares.appendChild(document.createTextNode(`.row-${rows-topLeftY} .col-${i} {background-color: red;}`));
+            styleSquares.appendChild(document.createTextNode(`.row-${rows - topLeftY} .col-${i} {background-color: red;}`));
         }
     } else {
         const ellipseFunction = calculateEllipseFunction(columns, rows);
@@ -149,7 +160,7 @@ function genEllipse() {
             let topLeftY = ellipseFunction(j);
             console.log(j, topLeftY)
             styleSquares.appendChild(document.createTextNode(`.row-${topLeftY} .col-${j} {background-color: red;}`));
-            styleSquares.appendChild(document.createTextNode(`.row-${rows-topLeftY} .col-${j} {background-color: red;}`));
+            styleSquares.appendChild(document.createTextNode(`.row-${rows - topLeftY} .col-${j} {background-color: red;}`));
         }
     }
 
@@ -178,20 +189,20 @@ function calculateEllipseFunction(majorAx, minorAx) {
     const term2 = minorAx / majorAx
     // b/2
     const term3 = minorAx / 2;
-    
+
     /**
      * Calculates the y-coordinate of an ellipse at a given x-coordinate using pre-calculated terms.
      *
      * @param {number} x - The x-coordinate for which to calculate the y-coordinate on the ellipse.
      * @returns {number} The y-coordinate on the ellipse corresponding to the given x-coordinate.
      */
-    function preCalculatedEllipseFunction(x){
+    function preCalculatedEllipseFunction(x) {
         // sqrt((a^2)/4 - (x-a/2)^2)
         const sqrtValue = term1 - Math.pow((x - calcWidth), 2);
-        console.log(`root`, sqrtValue)
+        // console.log(`root`, sqrtValue)
         // (b/a) * sqrt((a^2)/4 - (x-a/2)^2) + b/2
         let term4 = term2 * (sqrtValue >= 0 ? Math.sqrt(sqrtValue) : 0);
-        let result = Math.round(term4 + term3);
+        let result = Math.ceil(term4 + term3);
         return result;
     }
 
