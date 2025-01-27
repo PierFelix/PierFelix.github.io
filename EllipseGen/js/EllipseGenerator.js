@@ -141,7 +141,7 @@ function genEllipse() {
             let topLeftY = ellipseFunction(i);
             console.log(i, topLeftY)
             styleSquares.appendChild(document.createTextNode(`.row-${topLeftY} .col-${i} {background-color: red;}`));
-            styleSquares.appendChild(document.createTextNode(`.row-${Math.round(rows-topLeftY)} .col-${i} {background-color: red;}`));
+            styleSquares.appendChild(document.createTextNode(`.row-${rows-topLeftY} .col-${i} {background-color: red;}`));
         }
     } else {
         const ellipseFunction = calculateEllipseFunction(columns, rows);
@@ -149,7 +149,7 @@ function genEllipse() {
             let topLeftY = ellipseFunction(j);
             console.log(j, topLeftY)
             styleSquares.appendChild(document.createTextNode(`.row-${topLeftY} .col-${j} {background-color: red;}`));
-            styleSquares.appendChild(document.createTextNode(`.row-${Math.round(rows-topLeftY)} .col-${j} {background-color: red;}`));
+            styleSquares.appendChild(document.createTextNode(`.row-${rows-topLeftY} .col-${j} {background-color: red;}`));
         }
     }
 
